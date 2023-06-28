@@ -1,5 +1,7 @@
 from ortools.sat.python import cp_model
 from Helper import read_input
+import os
+cur_path = os.getcwd()
 
 class ConstraintProgrammingSolver:
 
@@ -26,19 +28,19 @@ class ConstraintProgrammingSolver:
         self.T = {}
         for i in range(self.n_items):
             for j in range(self.n_trucks):
-                self.T[i, j] = self.model.NewBoolVar(f'item_{i}_in_truck_{j}')
+                self.T[i, j] = self.model.NewBoolVar(f'T_{i}_{j}')
 
         # R[i] means is item-i rotated
-        self.R = [self.model.NewBoolVar(f'item_{i}_rotated') for i in range(self.n_items)]
-
-        # Z[j] means truck-j is used
-        self.Z = [self.model.NewBoolVar(f'truck_{j}_is_used') for j in range(self.n_trucks)]
+        self.R = [self.model.NewBoolVar(f'R_{i}') for i in range(self.n_items)]
 
         # x[i] is the x-coor of item-i
         self.x = [self.model.NewIntVar(0, self.max_truck_width, f'x_{i}') for i in range(self.n_items)]
 
         # y[i] is the y-coor of item-i
         self.y = [self.model.NewIntVar(0, self.max_truck_height, f'y_{i}') for i in range(self.n_items)]
+
+        # Z[j] means truck-j is used
+        self.Z = [self.model.NewBoolVar(f'Z_{j}') for j in range(self.n_trucks)]
 
     def setConstraint(self):
         # Each item can only be placed in one truck
@@ -117,8 +119,8 @@ class ConstraintProgrammingSolver:
     
 
 if __name__ == "__main__":
-    input_path = "E:/planning_optimization/container2Dloading/data.in"
-    output_path = "E:/planning_optimization/container2Dloading/data.out"
+    input_path = cur_path + "/data.in"
+    output_path = cur_path + "/data.out"
 
     n_items, n_trucks, items, trucks = read_input(file_path=input_path)
 

@@ -24,9 +24,6 @@ class MixedIntegerProgramming:
     def setSolver(self):
         self.solver = pywraplp.Solver.CreateSolver('SCIP')
 
-        # Create variables
-        self.MIP_inf = 1000000
-
         # T[i, j] means item-i is placed in truck-j
         self.T = {}
         for i in range(n_items):
@@ -83,8 +80,8 @@ class MixedIntegerProgramming:
 
         # Find which truck has been used 
         for k in range(self.n_trucks):
-            self.solver.Add(self.Z[k] <= sum(self.T[i,k] for i in range(self.n_items)) * self.MIP_inf)
-            self.solver.Add(sum(self.T[i,k] for i in range(self.n_items)) <= self.Z[k] * self.MIP_inf)
+            self.solver.Add(self.Z[k] <= sum(self.T[i,k] for i in range(self.n_items)))
+            self.solver.Add(sum(self.T[i,k] for i in range(self.n_items)) <= self.Z[k] * self.n_items)
 
     def setObjective(self):
         cost = sum(self.Z[k]*self.trucks[k][2] for k in range(self.n_trucks))

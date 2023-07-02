@@ -72,13 +72,10 @@ class ConstraintProgrammingSolver:
                 for j in range(self.n_trucks):
                     self.model.AddBoolOr(a1, a2, a3, a4).OnlyEnforceIf(self.T[i, j], self.T[k, j])
     
-        # Find which truck has been used               
-        for j in range(self.n_trucks):
-            b1 = self.model.NewBoolVar('b')
-            self.model.Add(sum(self.T[i, j] for i in range(self.n_items)) == 0).OnlyEnforceIf(b1)
-            self.model.Add(self.Z[j] == 0).OnlyEnforceIf(b1)
-            self.model.Add(sum(self.T[i, j] for i in range(self.n_items)) > 0).OnlyEnforceIf(b1.Not())
-            self.model.Add(self.Z[j] == 1).OnlyEnforceIf(b1.Not())
+        # Find which truck has been used 
+        for k in range(self.n_trucks):
+            self.model.Add(self.Z[k] <= sum(self.T[i,k] for i in range(self.n_items)))
+            self.model.Add(sum(self.T[i,k] for i in range(self.n_items)) <= self.Z[k] * self.n_items)
 
     def setObjective(self):
         cost = sum(self.Z[j] * self.trucks[j][2] for j in range(self.n_trucks))
@@ -117,7 +114,6 @@ class ConstraintProgrammingSolver:
             for i in range(self.n_items):
                 f.writelines(f"{i+1} {self.t_solution[i]+1} {self.x_solution[i]} {self.y_solution[i]} {self.o_solution[i]}\n")
     
-
 if __name__ == "__main__":
     input_path = cur_path + "/data.in"
     output_path = cur_path + "/data.out"

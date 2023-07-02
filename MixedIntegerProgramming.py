@@ -25,7 +25,7 @@ class MixedIntegerProgramming:
         self.solver = pywraplp.Solver.CreateSolver('SCIP')
 
         # Create variables
-        self.M = 1000000
+        self.MIP_inf = 1000000
 
         # T[i, j] means item-i is placed in truck-j
         self.T = {}
@@ -49,7 +49,7 @@ class MixedIntegerProgramming:
         self.Z = [self.solver.IntVar(0, 1, f'Z_{i}') for i in range(self.n_trucks)]
 
     def setConstraint(self):
-        # T[i, j] means item-i is placed in truck-j
+        # Each item can only be placed in one truck
         for i in range(self.n_items):
             self.solver.Add(sum(self.T[i, j] for j in range(self.n_trucks)) == 1)
 
@@ -58,41 +58,33 @@ class MixedIntegerProgramming:
             self.solver.Add(self.r[i] == (1-self.R[i]) * items[i][0] + self.R[i] * items[i][1] + self.l[i])
             self.solver.Add(self.t[i] == (1-self.R[i]) * items[i][1] + self.R[i] * items[i][0] + self.b[i])
             for k in range(self.n_trucks):
-                self.solver.Add(self.r[i] <= (1-self.T[i, k]) * self.M + self.trucks[k][0])
-                self.solver.Add(self.l[i] <= (1-self.T[i, k]) * self.M + self.trucks[k][0])
-                self.solver.Add(self.t[i] <= (1-self.T[i, k]) * self.M + self.trucks[k][1])
-                self.solver.Add(self.b[i] <= (1-self.T[i, k]) * self.M + self.trucks[k][1])  
+                self.solver.Add(self.r[i] <= (1-self.T[i, k]) * self.max_truck_width + self.trucks[k][0])
+                self.solver.Add(self.l[i] <= (1-self.T[i, k]) * self.max_truck_width + self.trucks[k][0])
+                self.solver.Add(self.t[i] <= (1-self.T[i, k]) * self.max_truck_height + self.trucks[k][1])
+                self.solver.Add(self.b[i] <= (1-self.T[i, k]) * self.max_truck_height + self.trucks[k][1])  
 
         # Overlap condition
         for i in range(self.n_items-1):
             for j in range(i+1, self.n_items):
                 for k in range(self.n_trucks):
-                    self.e = self.solver.IntVar(0, 1, f'e_{i}_{j}')
-                    self.solver.Add(self.e >= self.T[i,k] + self.T[j,k] - 1)
-                    self.solver.Add(self.e <= self.T[i,k])
-                    self.solver.Add(self.e <= self.T[j,k])
-
-                    # Binary variables for each constraint
                     self.c1 = self.solver.IntVar(0, 1, f'c1_{i}_{j}')
                     self.c2 = self.solver.IntVar(0, 1, f'c2_{i}_{j}')
                     self.c3 = self.solver.IntVar(0, 1, f'c3_{i}_{j}')
                     self.c4 = self.solver.IntVar(0, 1, f'c4_{i}_{j}')
                     
-                    # Constraints that the binary variables must satisfy
-                    self.solver.Add(self.r[i] <= self.l[j] + self.M * (1 - self.c1))
-                    self.solver.Add(self.r[j] <= self.l[i] + self.M * (1 - self.c2))
-                    self.solver.Add(self.t[i] <= self.b[j] + self.M * (1 - self.c3))
-                    self.solver.Add(self.t[j] <= self.b[i] + self.M * (1 - self.c4))
+                    self.solver.Add(self.r[i] <= self.l[j] + self.max_truck_width * (1 - self.c1))
+                    self.solver.Add(self.r[j] <= self.l[i] + self.max_truck_width * (1 - self.c2))
+                    self.solver.Add(self.t[i] <= self.b[j] + self.max_truck_height * (1 - self.c3))
+                    self.solver.Add(self.t[j] <= self.b[i] + self.max_truck_height * (1 - self.c4))
 
-                    self.solver.Add(self.c1 + self.c2 + self.c3 + self.c4 + (1-self.e)*self.M >= 1 )
-                    self.solver.Add(self.c1 + self.c2 + self.c3 + self.c4 <= self.e*self.M )
+                    self.solver.Add(self.c1 + self.c2 + self.c3 + self.c4 >= self.T[i,k] + self.T[j,k] - 1)
+                    self.solver.Add(self.c1 + self.c2 + self.c3 + self.c4 <= 4*self.T[j,k])
+                    self.solver.Add(self.c1 + self.c2 + self.c3 + self.c4 <= 4*self.T[i,k])
 
         # Find which truck has been used 
         for k in range(self.n_trucks):
-            self.q = self.solver.IntVar(0, n_items, f'q[{k}]')
-            self.solver.Add(self.q == sum(self.T[(i,k)] for i in range(n_items)))
-            self.solver.Add(self.Z[k] <= self.q * self.M)
-            self.solver.Add(self.q <= self.Z[k] * self.M)
+            self.solver.Add(self.Z[k] <= sum(self.T[i,k] for i in range(self.n_items)) * self.MIP_inf)
+            self.solver.Add(sum(self.T[i,k] for i in range(self.n_items)) <= self.Z[k] * self.MIP_inf)
 
     def setObjective(self):
         cost = sum(self.Z[k]*self.trucks[k][2] for k in range(self.n_trucks))
@@ -133,4 +125,4 @@ if __name__ == '__main__':
     solver = MixedIntegerProgramming(n_items, n_trucks, items, trucks)
     solver.solve()
     solver.printSolution()
-    # solver.writeToFile(output_path)
+    solver.writeToFile(output_path)

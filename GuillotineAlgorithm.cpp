@@ -144,11 +144,11 @@ void mergeFreeRectangles(Truck &truck){
     bool isChanged = true;
     while(isChanged){
         isChanged = false;
-        for(uint32_t i = 0; i < truck.list_free_rectangles.size(); ++i){
+        for(uint32_t i=0; i<truck.list_free_rectangles.size(); ++i){
             Free_Rectangle& first = truck.list_free_rectangles[i];
 
             // Loop to find a mergable free_rec for the rec i
-            for(uint32_t j = 0; j < truck.list_free_rectangles.size(); ++j){
+            for(uint32_t j=0; j<truck.list_free_rectangles.size(); ++j){
                 Free_Rectangle& second = truck.list_free_rectangles[j];
                 if(j == i) continue;
 
@@ -203,8 +203,8 @@ bool tryPlaceItemToTruck(Truck &truck, Item &item){
 }
 
 void solve(){
-    for(uint32_t i = 1; i <= n_list_items; ++i){
-        for(uint32_t j = 1; j <= n_trucks; ++j){
+    for(uint32_t i=1; i<=n_list_items; ++i){
+        for(uint32_t j=1; j<=n_trucks; ++j){
             if(tryPlaceItemToTruck(truck[j],item[i])) 
                 break;
         }
@@ -212,16 +212,16 @@ void solve(){
 }
 
 void readInput(){
-    freopen("INPUT.txt", "r", stdin);
+    // freopen("INPUT.txt", "r", stdin);
     cin >> n_list_items >> n_trucks;
 
-    for(uint32_t i=1; i <= n_list_items; ++i){
+    for(uint32_t i=1; i<=n_list_items; ++i){
         cin >> item[i].width >> item[i].height;
         item[i].id = i;
         if(item[i].width > item[i].height) rotateItem(item[i]);
     }
 
-    for(uint32_t i=1; i <= n_trucks; ++i){
+    for(uint32_t i=1; i<=n_trucks; ++i){
         cin >> truck[i].width >> truck[i].height >> truck[i].cost;
         truck[i].id = i;
 
@@ -239,7 +239,7 @@ void readInput(){
 
 void printSolution(){
     sort(item + 1, item + n_list_items + 1, compareItemByID);
-    for(uint32_t i = 1; i <= n_list_items; ++i){
+    for(uint32_t i=1; i<=n_list_items; ++i){
         cout << item[i].id << ' ' << item[i].pos_truck << ' ' << item[i].corner_x << ' ' << item[i].corner_y << ' ' << item[i].rotated << '\n';
     }
 }

@@ -144,7 +144,7 @@ void Try(int n){
 
 int main(){
     freopen("INPUT.txt", "r", stdin);
-    freopen("OUTPUT.txt", "w", stdout);
+    // freopen("OUTPUT.txt", "w", stdout);
     cin>>n_items>>n_trucks;
     for(int i=0; i<n_items; ++i){
         cin>>items[i][0]>>items[i][1];

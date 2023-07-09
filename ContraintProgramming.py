@@ -115,8 +115,8 @@ class ConstraintProgrammingSolver:
                 f.writelines(f"{i+1} {self.t_solution[i]+1} {self.x_solution[i]} {self.y_solution[i]} {self.o_solution[i]}\n")
 
 if __name__ == "__main__":
-    input_path = cur_path + "/data.in"
-    output_path = cur_path + "/data.out"
+    input_path = cur_path + "/INPUT.txt"
+    output_path = cur_path + "/OUTPUT.txt"
 
     n_items, n_trucks, items, trucks = read_input(input_path)
 

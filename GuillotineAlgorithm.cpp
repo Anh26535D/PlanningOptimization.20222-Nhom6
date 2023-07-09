@@ -9,8 +9,8 @@ using namespace std;
 
 struct Item{
     uint32_t id, width, height;
-    uint32_t pos_truck, corner_x, corner_y;
-    bool rotated = 0;
+    uint32_t truck_id, corner_x, corner_y;
+    bool rotated = false;
 };
 
 struct Free_Rectangle{
@@ -31,8 +31,8 @@ struct Truck{
     vector <Item> list_items;
 };
 
-uint32_t n_list_items, n_trucks;
-Item item[NMAX], item_guillotine[NMAX];
+uint32_t n_items, n_trucks;
+Item item[NMAX];
 Truck truck[KMAX];
 
 bool compareItem(Item a, Item b){
@@ -182,7 +182,7 @@ bool tryPlaceItemToTruck(Truck &truck, Item &item){
     Free_Rectangle best_rec = suitable_rec.suitable_rec;
 
     // Add the item into the choosen free_rec
-    item.pos_truck = truck.id;
+    item.truck_id = truck.id;
     item.corner_x = best_rec.corner_x;
     item.corner_y = best_rec.corner_y;
     if(suitable_rec.isRotated) 
@@ -203,7 +203,7 @@ bool tryPlaceItemToTruck(Truck &truck, Item &item){
 }
 
 void solve(){
-    for(uint32_t i=1; i<=n_list_items; ++i){
+    for(uint32_t i=1; i<=n_items; ++i){
         for(uint32_t j=1; j<=n_trucks; ++j){
             if(tryPlaceItemToTruck(truck[j],item[i])) 
                 break;
@@ -212,10 +212,10 @@ void solve(){
 }
 
 void readInput(){
-    // freopen("INPUT.txt", "r", stdin);
-    cin >> n_list_items >> n_trucks;
+    freopen("INPUT.txt", "r", stdin);
+    cin >> n_items >> n_trucks;
 
-    for(uint32_t i=1; i<=n_list_items; ++i){
+    for(uint32_t i=1; i<=n_items; ++i){
         cin >> item[i].width >> item[i].height;
         item[i].id = i;
         if(item[i].width > item[i].height) rotateItem(item[i]);
@@ -233,14 +233,14 @@ void readInput(){
         truck[i].list_free_rectangles.push_back(first_rec);
     }
 
-    sort(item + 1, item + n_list_items + 1, compareItem);
+    sort(item + 1, item + n_items + 1, compareItem);
     sort(truck + 1, truck + n_trucks + 1, compareTruck);
 }
 
 void printSolution(){
-    sort(item + 1, item + n_list_items + 1, compareItemByID);
-    for(uint32_t i=1; i<=n_list_items; ++i){
-        cout << item[i].id << ' ' << item[i].pos_truck << ' ' << item[i].corner_x << ' ' << item[i].corner_y << ' ' << item[i].rotated << '\n';
+    sort(item + 1, item + n_items + 1, compareItemByID);
+    for(uint32_t i=1; i<=n_items; ++i){
+        cout << item[i].id << ' ' << item[i].truck_id << ' ' << item[i].corner_x << ' ' << item[i].corner_y << ' ' << item[i].rotated << '\n';
     }
 }
 

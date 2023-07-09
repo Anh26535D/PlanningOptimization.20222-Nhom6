@@ -27,3 +27,26 @@ def read_input(file_path):
         trucks = [tuple(map(int, line.split())) for line in data[n_items+1:]]
 
     return n_items, n_trucks, items, trucks
+
+def read_input_by_stdin():
+    '''Read input data from standard input for container 2d loading problem.
+
+        Returns
+        -------
+        n_items : int
+            Number of items.
+
+        n_trucks : int
+            Number of trucks.
+
+        items : list 
+            List of tuple (item's width, item's height).
+            
+        trucks : list
+            List of tuple (truck's width, truck's height, truck's cost).
+    '''
+    n_items, n_trucks = map(int, input().split())
+    items = [tuple(map(int, input().split())) for i in range(n_items)]
+    trucks = [tuple(map(int, input().split())) for i in range(n_trucks)]   
+
+    return n_items, n_trucks, items, trucks

@@ -122,4 +122,4 @@ if __name__ == '__main__':
     solver = MixedIntegerProgramming(n_items, n_trucks, items, trucks)
     solver.solve()
     solver.printSolution()
-    solver.writeToFile(output_path)
+    # solver.writeToFile(output_path)

@@ -113,15 +113,15 @@ class ConstraintProgrammingSolver:
         with open(file_path, "w") as f:
             for i in range(self.n_items):
                 f.writelines(f"{i+1} {self.t_solution[i]+1} {self.x_solution[i]} {self.y_solution[i]} {self.o_solution[i]}\n")
-    
+
 if __name__ == "__main__":
     input_path = cur_path + "/data.in"
     output_path = cur_path + "/data.out"
 
-    n_items, n_trucks, items, trucks = read_input(file_path=input_path)
+    n_items, n_trucks, items, trucks = read_input(input_path)
 
     solver = ConstraintProgrammingSolver(n_items, n_trucks, items, trucks)
     solver.solve()
     solver.printSolution()
-    solver.writeToFile(output_path)
+    # solver.writeToFile(output_path)
     

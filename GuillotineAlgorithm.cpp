@@ -27,8 +27,8 @@ struct Suitable_Free_Rec_Result{
 struct Truck{
     uint32_t id, width, height;
     uint32_t cost;
-    vector <Free_Rectangle> list_free_rectangles;
-    vector <Item> list_items;
+    vector<Free_Rectangle> list_free_rectangles;
+    vector<Item> list_items;
 };
 
 uint32_t n_items, n_trucks;
